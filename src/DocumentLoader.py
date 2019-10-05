@@ -16,3 +16,15 @@ class DocumentLoader():
 			ext = parts[len(parts)-1]
 			if ext == "txt":
 				self.add_text_file(path.join(self.directory, file))
+
+	def add_text_file(self, file_path):
+		file = None
+		try:
+			file = open(file_path, "r")
+			self.files[file_path] = file.read()
+		except FileNotFoundError:
+			print("Warning: File {} does not exist".format(file_path))
+			return
+		finally:
+			if file is not None:
+				file.close()
