@@ -1,0 +1,6 @@
+# Python Virtual Enviornment
+.env
+
+# Development Enviornments
+.vscode
+.idea
