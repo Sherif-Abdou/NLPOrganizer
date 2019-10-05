@@ -4,7 +4,8 @@ Loads all Text and Word Documents in a Chosen Directory and stores them as Strin
 import os
 import os.path as path
 
-class DocumentLoader():
+
+class DocumentLoader:
 	def __init__(self, directory: str):
 		self.directory = directory
 		self.files = dict()
