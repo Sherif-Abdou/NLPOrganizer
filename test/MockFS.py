@@ -11,3 +11,5 @@ def generate_mock_folder():
 		a.write("Hello World this is a test document #1.\nIt's a pretty cool test document.")
 	with open("mock/b.txt", "w") as b:
 		b.write("Hello Land this is a test thing #2.\nIt's a pretty quality test thing.")
+	with open("mock/c.ab.txt", "w") as b:
+		b.write("Hello Land this is a test thing #3.\nIt's a pretty quality test thing.")
