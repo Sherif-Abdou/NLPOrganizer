@@ -1,6 +1,12 @@
 # Python Virtual Enviornment
 .env
 
+# Python Enviornments
+**/__pycache__
+
 # Development Enviornments
 .vscode
 .idea
+
+# Testing
+test/mock
