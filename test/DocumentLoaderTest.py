@@ -20,6 +20,12 @@ class DocumentLoaderTest(unittest.TestCase):
 		loader.load_files()
 		print(loader.files)
 
+	def test_pdf_document(self):
+		pdf_dir = path.join(path.dirname(__file__), "pdf")
+		loader = DocumentLoader(pdf_dir)
+		loader.load_files()
+		print(loader.files)
+
 
 if __name__ == '__main__':
 	unittest.main()

@@ -4,7 +4,7 @@ Loads all Text and Word Documents in a Chosen Directory and stores them as Strin
 import os
 import os.path as path
 import docx2txt
-
+import PyPDF2
 
 class DocumentLoader:
 	def __init__(self, directory: str):
@@ -20,6 +20,8 @@ class DocumentLoader:
 				self.add_text_file(path.join(self.directory, file))
 			elif ext == "docx":
 				self.add_word_file(path.join(self.directory, file))
+			elif ext == "pdf":
+				self.add_pdf_file(path.join(self.directory, file))
 
 	def add_text_file(self, file_path):
 		file = None
@@ -37,6 +39,20 @@ class DocumentLoader:
 		try:
 			text = docx2txt.process(file_path)
 			self.files[file_path] = text
+		except Exception as error:
+			print("Couldn't Load {0}: {1}".format(file_path, error))
+			return
+
+	def add_pdf_file(self, file_path):
+		try:
+			with open(file_path, "rb") as raw_file:
+				reader = PyPDF2.PdfFileReader(raw_file)
+				pages = reader.numPages
+				text = ""
+				for i in range(pages):
+					page = reader.getPage(i)
+					text += page.extractText()
+				self.files[file_path] = text
 		except Exception as error:
 			print("Couldn't Load {0}: {1}".format(file_path, error))
 			return
