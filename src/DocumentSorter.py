@@ -40,12 +40,25 @@ class DocumentSorter:
 		file2_nouns = [token.text for token in self.nlp(file2) if
 					   token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
 		file2_counter = Counter(file2_nouns)
-		file1_noun = file1_counter.most_common(1)[0][0]
-		file2_noun = file2_counter.most_common(1)[0][0]
-		file1_similar = self.most_similar(self.nlp.vocab[file1_noun], 100)
-		file2_similar = self.most_similar(self.nlp.vocab[file2_noun], 100)
-		print(file1_similar)
-		print(file2_similar)
-		print(self.intersection(file1_similar, file2_similar))
-		print(file1_noun)
-		print(file2_noun)
+		file1_top = file1_counter.most_common(5)
+		file2_top = file2_counter.most_common(5)
+		scores = dict()
+
+		for tops in [file1_top, file2_top]:
+			i = 1
+			for top, _ in tops:
+				for similar in self.most_similar(self.nlp.vocab[top], 50):
+					if similar in scores:
+						scores[similar] += 1/i
+					else:
+						scores[similar] = 1/i
+				i += 0.1
+
+		curr_word = ""
+		curr_score = float("-inf")
+		for word, score in scores.items():
+			if score > curr_score:
+				curr_word = word
+				curr_score = score
+		print(curr_word)
+		print(curr_score)
