@@ -12,7 +12,7 @@ class DocumentSorterTest(unittest.TestCase):
 		generate_mock_folder()
 		mock_dir = path.join(path.dirname(__file__), "mock")
 		loader = DocumentLoader(mock_dir)
-		loader.load_text_files()
+		loader.load_files()
 		sorter = DocumentSorter(loader.files, npl)
 		sorter.check_for_similar(path.join(mock_dir, "a.txt"), sorter.files[path.join(mock_dir, "a.txt")])
 
@@ -21,7 +21,7 @@ class DocumentSorterTest(unittest.TestCase):
 		generate_mock_folder()
 		mock_dir = path.join(path.dirname(__file__), "mock")
 		loader = DocumentLoader(mock_dir)
-		loader.load_text_files()
+		loader.load_files()
 		sorter = DocumentSorter(loader.files, npl)
 		sorter.category_name_for(sorter.files[path.join(mock_dir, "a.txt")],
 								 sorter.files[path.join(mock_dir, "b.txt")])
