@@ -6,6 +6,7 @@ import os.path as path
 import docx2txt
 import PyPDF2
 
+
 class DocumentLoader:
 	def __init__(self, directory: str):
 		self.directory = directory
@@ -13,9 +14,11 @@ class DocumentLoader:
 
 	def load_files(self):
 		files = os.listdir(self.directory)
+		# Checks the file extension of each file
 		for file in files:
 			parts = file.split(".")
-			ext = parts[len(parts)-1]
+			ext = parts[len(parts) - 1]
+			# Calls appropriate method for each file type
 			if ext == "txt":
 				self.add_text_file(path.join(self.directory, file))
 			elif ext == "docx":
