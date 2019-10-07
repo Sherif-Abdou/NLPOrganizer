@@ -30,7 +30,7 @@ class DocumentLoader:
         try:
             with open(file_path, "r") as file:
                 self.files[file_path] = file.read()
-        except Excepton as error:
+        except Exception as error:
             print("Couldn't Load {0}: {1}".format(file_path, error))
             return
 
