@@ -14,7 +14,7 @@ class DocumentSorterTest(unittest.TestCase):
 		loader = DocumentLoader(mock_dir)
 		loader.load_files()
 		sorter = DocumentSorter(loader.files, npl)
-		sorter.check_for_similar(path.join(mock_dir, "a.txt"), sorter.files[path.join(mock_dir, "a.txt")])
+		print(sorter.check_for_similar(path.join(mock_dir, "a.txt"), sorter.files[path.join(mock_dir, "a.txt")]))
 
 	def test_category(self):
 		npl = spacy.load("en_core_web_lg")
@@ -23,8 +23,8 @@ class DocumentSorterTest(unittest.TestCase):
 		loader = DocumentLoader(mock_dir)
 		loader.load_files()
 		sorter = DocumentSorter(loader.files, npl)
-		sorter.category_name_for(sorter.files[path.join(mock_dir, "a.txt")],
-								 sorter.files[path.join(mock_dir, "b.txt")])
+		print(sorter.category_name_for(sorter.files[path.join(mock_dir, "a.txt")],
+								 sorter.files[path.join(mock_dir, "b.txt")]))
 
 
 if __name__ == '__main__':
