@@ -2,7 +2,7 @@
 Sorts a set of Documents using Natural Language Processing
 """
 from collections import Counter
-
+from src.Category import Category
 
 class DocumentSorter:
     # The threshold for when two files are considered similar
@@ -15,7 +15,9 @@ class DocumentSorter:
     # Determines what files are similar to a given file
     def check_for_similar(self, path, file):
         similar = dict()
-        for other_path, other_file in self.files.items():
+        for file in self.files:
+            other_path = file.path
+            other_file = file.contents
             if other_path != path:
                 # Loads each file into Spacy's Natural Language Processing
                 main_doc = self.nlp(file)
@@ -72,4 +74,4 @@ class DocumentSorter:
                 curr_word = word
                 curr_score = score
         # Outputs the highest scoring word
-        return curr_word
+        return Category(curr_word)

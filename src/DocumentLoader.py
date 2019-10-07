@@ -5,12 +5,13 @@ import os
 import os.path as path
 import docx2txt
 import PyPDF2
+from src.File import File
 
 
 class DocumentLoader:
     def __init__(self, directory: str):
         self.directory = directory
-        self.files = dict()
+        self.files = []
 
     def load_files(self):
         files = os.listdir(self.directory)
@@ -29,7 +30,8 @@ class DocumentLoader:
     def add_text_file(self, file_path):
         try:
             with open(file_path, "r") as file:
-                self.files[file_path] = file.read()
+                text_file = File(file_path, file.read())
+                self.files.append(text_file)
         except Exception as error:
             print("Couldn't Load {0}: {1}".format(file_path, error))
             return
@@ -37,7 +39,8 @@ class DocumentLoader:
     def add_word_file(self, file_path):
         try:
             text = docx2txt.process(file_path)
-            self.files[file_path] = text
+            file = File(file_path, text)
+            self.files.append(file)
         except Exception as error:
             return
 
@@ -50,6 +53,7 @@ class DocumentLoader:
                 for i in range(pages):
                     page = reader.getPage(i)
                     text += page.extractText()
-                self.files[file_path] = text
+                file = File(file_path, text)
+                self.files.append(file)
         except Exception as error:
             print("Couldn't Load {0}: {1}".format(file_path, error))
