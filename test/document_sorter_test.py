@@ -26,8 +26,8 @@ class document_sorter_test(unittest.TestCase):
         loader = DocumentLoader(mock_dir)
         loader.load_files()
         sorter = DocumentSorter(loader.files, npl)
-        print(sorter.category_name_for(sorter.files[path.join(mock_dir, "a.txt")],
-                                       sorter.files[path.join(mock_dir, "b.txt")]))
+        print(sorter.category_name_for(sorter.files[0].contents,
+                                       sorter.files[1].contents).name)
 
 
 if __name__ == '__main__':
