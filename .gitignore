@@ -3,6 +3,7 @@
 
 # Python Enviornments
 **/__pycache__
+nlporganizer.egg-info
 
 # Development Enviornments
 .vscode
