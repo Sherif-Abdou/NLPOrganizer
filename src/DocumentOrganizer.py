@@ -23,9 +23,12 @@ class DocumentOrganizer:
 		if file.sorted:
 			return
 		for category in self.categories:
-			similarity = self.nlp(file.contents).similarity(self.nlp(category.name))
+			similarity = 0
+			for category_file in category.files:
+				similarity += (self.nlp(file.contents).similarity(self.nlp(category_file.contents)))/len(category.files)
 			if similarity >= DocumentSorter.threshold:
 				category.files.append(file)
+				file.sorted = True
 				return
 		similar_files = self.document_sorter.check_for_similar(file.path, file.contents)
 		for other_file in similar_files:
