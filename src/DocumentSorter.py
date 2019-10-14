@@ -3,7 +3,10 @@ Sorts a set of Documents using Natural Language Processing
 """
 from collections import Counter
 from src.Category import Category
-
+from functools import lru_cache
+import json
+from os import path
+from os import mkdir
 
 class DocumentSorter:
 	# The threshold for when two files are considered similar
@@ -12,6 +15,20 @@ class DocumentSorter:
 	def __init__(self, files, nlp):
 		self.files = files
 		self.nlp = nlp
+		self.cache_path = "/tmp/cache/npl/cache"
+		self.cache = dict()
+		self.loadcache()
+
+	def loadcache(self):
+		if not path.exists(self.cache_path):
+			mkdir(path.dirname(self.cache_path))
+		else:
+			with open(self.cache_path, "r") as file:
+				self.cache = json.load(file)
+
+	def savecache(self):
+		with open(self.cache_path, "w") as file:
+			json.dump(self.cache, file)
 
 	# Determines what files are similar to a given file
 	def check_for_similar(self, path: str, file: str):
@@ -37,11 +54,16 @@ class DocumentSorter:
 
 	# Finds the i most similar words to a given word
 	def most_similar(self, word, i):
-		queries = [w for w in word.vocab if w.is_lower ==
-				   word.is_lower and w.prob >= -15]
+		if word in self.cache:
+			return self.cache[word]
+		lexeme = self.nlp.vocab[word]
+		queries = [w for w in lexeme.vocab if w.is_lower ==
+				   lexeme.is_lower and w.prob >= -15]
 		by_similarity = sorted(
-			queries, key=lambda w: word.similarity(w), reverse=True)
-		return [w.lower_ for w in by_similarity[:i]]
+			queries, key=lambda w: lexeme.similarity(w), reverse=True)
+		output = [w.lower_ for w in by_similarity[:i]]
+		self.cache[word] = output
+		return output
 
 	# Determines a category name
 	def category_name_for(self, file1, file2):
@@ -60,7 +82,7 @@ class DocumentSorter:
 		for tops in [file1_top, file2_top]:
 			i = 1
 			for top, _ in tops:
-				for similar in self.most_similar(self.nlp.vocab[top], 50):
+				for similar in self.most_similar(top, 50):
 					if similar in scores:
 						scores[similar] += 1 / i
 					else:
@@ -71,8 +93,10 @@ class DocumentSorter:
 		curr_word = ""
 		curr_score = float("-inf")
 		for word, score in scores.items():
+			print(word)
 			if score > curr_score:
 				curr_word = word
 				curr_score = score
+		self.savecache()
 		# Outputs the highest scoring word
 		return Category(curr_word)
