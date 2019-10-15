@@ -1,3 +1,7 @@
+"""
+A file category
+"""
+
 from src.File import File
 
 

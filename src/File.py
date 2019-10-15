@@ -1,3 +1,6 @@
+"""
+A file being sorted
+"""
 
 
 class File:
@@ -7,4 +10,4 @@ class File:
         self.sorted = False
 
     def __str__(self):
-        return "${0}: ${1}".format(self.path, self.contents)
+        return "{0}: {1}".format(self.path, self.contents)

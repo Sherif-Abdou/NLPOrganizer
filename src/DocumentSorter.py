@@ -22,6 +22,7 @@ class DocumentSorter:
         self.loadcache()
 
     def loadcache(self):
+        # Make sure the path exists, if not create it
         if not path.exists(self.cache_folder):
             mkdir(self.cache_folder)
         else:
