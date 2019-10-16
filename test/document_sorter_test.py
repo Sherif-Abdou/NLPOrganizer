@@ -15,8 +15,8 @@ class document_sorter_test(unittest.TestCase):
         loader = DocumentLoader(mock_dir)
         loader.load_files()
         sorter = DocumentSorter(loader.files, npl)
-        print(sorter.check_for_similar(path.join(mock_dir, "a.txt"),
-                                       sorter.files[path.join(mock_dir, "a.txt")]))
+        print(sorter.check_for_similar(path.join(mock_dir, "uk.txt"),
+                                       sorter.files[path.join(mock_dir, "france.txt")]))
 
     def test_category(self):
         os.environ["SPACY_WARNING_IGNORE"] = "W008"

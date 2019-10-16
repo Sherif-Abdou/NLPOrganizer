@@ -11,8 +11,6 @@ nlporganizer.egg-info
 
 # Testing
 test/mock
-test/word
-test/pdf
 
 # Cache
 src/cache
