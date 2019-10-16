@@ -16,15 +16,15 @@ class DocumentSorter:
     def __init__(self, files, nlp):
         self.files = files
         self.nlp = nlp
-        self.cache_path = "/tmp/cache/npl/cache"
-        self.cache_folder = "/tmp/cache/npl"
+        self.cache_path = path.join(path.dirname(__file__), "cache")
+        print(self.cache_path)
         self.cache = dict()
         self.loadcache()
 
     def loadcache(self):
         # Make sure the path exists, if not create it
-        if not path.exists(self.cache_folder):
-            mkdir(self.cache_folder)
+        if not path.exists(self.cache_path):
+            return
         else:
             with open(self.cache_path, "r") as file:
                 self.cache = json.load(file)
@@ -60,7 +60,7 @@ class DocumentSorter:
             return self.cache[word]
         lexeme = self.nlp.vocab[word]
         queries = [w for w in lexeme.vocab if w.is_lower ==
-                   lexeme.is_lower and w.prob >= -15]
+                   lexeme.is_lower and w.prob >= -15 and w.has_vector]
         by_similarity = sorted(
             queries, key=lambda w: lexeme.similarity(w), reverse=True)
         output = [w.lower_ for w in by_similarity[:i]]
