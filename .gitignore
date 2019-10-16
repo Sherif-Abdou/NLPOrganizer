@@ -13,3 +13,6 @@ nlporganizer.egg-info
 test/mock
 test/word
 test/pdf
+
+# Cache
+src/cache
