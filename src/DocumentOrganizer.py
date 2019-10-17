@@ -5,7 +5,6 @@ Organizes all the files in a given directory based on DocumentSorter outputs
 from src.DocumentSorter import DocumentSorter
 from src.DocumentLoader import DocumentLoader
 from src.File import File
-from src.Category import Category
 from shutil import move
 from os import path, mkdir
 
