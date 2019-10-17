@@ -5,6 +5,7 @@ Organizes all the files in a given directory based on DocumentSorter outputs
 from src.DocumentSorter import DocumentSorter
 from src.DocumentLoader import DocumentLoader
 from src.File import File
+from src.Category import Category
 from shutil import move
 from os import path, mkdir
 
@@ -43,14 +44,17 @@ class DocumentOrganizer:
             file.path, file.contents)
         for other_file in similar_files:
             if other_file.sorted is False:
-                category = self.document_sorter.category_name_for(
-                    file.contents, other_file.contents)
+                category = Category("untitled")
                 file.sorted = True
                 other_file.sorted = True
                 category.files.append(file)
                 category.files.append(other_file)
                 self.categories.append(category)
                 return
+
+    def category_names(self):
+        for category in self.categories:
+            self.document_sorter.category_name_for(category)
 
     # Moves the sorted files into their proper place
     def move_files(self):

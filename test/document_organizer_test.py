@@ -24,6 +24,7 @@ class MyTestCase(unittest.TestCase):
         organizer = DocumentOrganizer(mock_dir, npl)
         for file in organizer.document_loader.files:
             organizer.sort_file(file)
+        organizer.category_names()
         organizer.move_files()
         print("Done")
 

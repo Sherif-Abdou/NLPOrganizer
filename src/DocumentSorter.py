@@ -60,7 +60,7 @@ class DocumentSorter:
             return self.cache[word]
         lexeme = self.nlp.vocab[word]
         queries = [w for w in lexeme.vocab if w.is_lower ==
-                   lexeme.is_lower and w.prob >= -15 and w.has_vector]
+                   lexeme.is_lower and w.prob >= -15 and w.has_vector and w.vector_norm]
         by_similarity = sorted(
             queries, key=lambda w: lexeme.similarity(w), reverse=True)
         output = [w.lower_ for w in by_similarity[:i]]
@@ -68,20 +68,19 @@ class DocumentSorter:
         return output
 
     # Determines a category name
-    def category_name_for(self, file1, file2):
+    def category_name_for(self, category):
         # Finds the 5 most common nouns in each document
-        file1_nouns = [token.text for token in self.nlp(file1) if
-                       token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
-        file1_counter = Counter(file1_nouns)
-        file2_nouns = [token.text for token in self.nlp(file2) if
-                       token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
-        file2_counter = Counter(file2_nouns)
-        file1_top = file1_counter.most_common(5)
-        file2_top = file2_counter.most_common(5)
+        top_nouns = []
+        for file in category.files:
+            file_nouns = [token.text for token in self.nlp(file.contents) if
+                          token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
+            file_counter = Counter(file_nouns)
+            file_top = file_counter.most_common(5)
+            top_nouns.append(file_top)
 
         # Scores the similar words of each noun based on number of appearances and similarity to original noun
         scores = dict()
-        for tops in [file1_top, file2_top]:
+        for tops in top_nouns:
             i = 1
             for top, _ in tops:
                 for similar in self.most_similar(top, 50):
@@ -100,4 +99,5 @@ class DocumentSorter:
                 curr_score = score
         self.savecache()
         # Outputs the highest scoring word
-        return Category(curr_word)
+        category.name = curr_word
+        return

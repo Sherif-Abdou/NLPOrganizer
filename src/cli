@@ -15,6 +15,7 @@ def run(directory):
     print(organizer.base_dir)
     for file in organizer.document_loader.files:
         organizer.sort_file(file)
+    organizer.category_names()
     organizer.move_files()
     echo("Done")
 
