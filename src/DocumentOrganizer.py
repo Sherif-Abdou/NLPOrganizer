@@ -42,15 +42,18 @@ class DocumentOrganizer:
         # Checks to see if a file can be sorted into a new category with another file
         similar_files = self.document_sorter.check_for_similar(
             file.path, file.contents)
-        for other_file in similar_files:
-            if other_file.sorted is False:
-                category = Category("untitled")
-                file.sorted = True
-                other_file.sorted = True
-                category.files.append(file)
-                category.files.append(other_file)
-                self.categories.append(category)
-                return
+        top_similar = (None, float("-inf"))
+        for other_file, similarity in similar_files:
+            if other_file.sorted is False and similarity >= top_similar[1]:
+                top_similar = (other_file, similarity)
+        if top_similar[0] is not None:
+            category = Category("untitled")
+            file.sorted = True
+            top_similar[0].sorted = True
+            category.files.append(file)
+            category.files.append(top_similar[0])
+            self.categories.append(category)
+            return
 
     def category_names(self):
         for category in self.categories:

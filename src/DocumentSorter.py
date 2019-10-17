@@ -51,7 +51,7 @@ class DocumentSorter:
                 # Compares the two files' similarity
                 similarity = main_doc_no_stop.similarity(other_doc_no_stop)
                 if similarity >= DocumentSorter.threshold:
-                    similar.append(other_rawfile)
+                    similar.append((other_rawfile, similarity))
         return similar
 
     # Finds the i most similar words to a given word
