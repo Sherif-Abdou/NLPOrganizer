@@ -1,5 +1,6 @@
 import unittest
 import spacy
+from os import path
 from test.MockFS import *
 from src.DocumentOrganizer import DocumentOrganizer
 

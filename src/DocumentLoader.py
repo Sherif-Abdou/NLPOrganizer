@@ -41,7 +41,7 @@ class DocumentLoader:
             text = docx2txt.process(file_path)
             file = File(file_path, text)
             self.files.append(file)
-        except Exception as error:
+        except Exception:
             return
 
     def add_pdf_file(self, file_path):
