@@ -76,14 +76,16 @@ class DocumentSorter:
                           token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
             file_counter = Counter(file_nouns)
             file_top = file_counter.most_common(5)
-            top_nouns.append(file_top)
+            top_nouns.append((file_top, path.basename(file.path).split(".")[0]))
 
         # Scores the similar words of each noun based on number of appearances and similarity to original noun
         scores = dict()
-        for tops in top_nouns:
+        for tops, name in top_nouns:
             i = 1
             for top, _ in tops:
                 for similar in self.most_similar(top, 50):
+                    if similar == top:
+                        continue
                     if similar in scores:
                         scores[similar] += 1 / i
                     else:
