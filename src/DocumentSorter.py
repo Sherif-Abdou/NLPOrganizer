@@ -17,7 +17,6 @@ class DocumentSorter:
         self.files = files
         self.nlp = nlp
         self.cache_path = path.join(path.dirname(__file__), "cache")
-        print(self.cache_path)
         self.cache = dict()
         self.loadcache()
 
@@ -76,9 +75,10 @@ class DocumentSorter:
                           token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
             file_counter = Counter(file_nouns)
             file_top = file_counter.most_common(5)
-            top_nouns.append((file_top, path.basename(file.path).split(".")[0]))
+            top_nouns.append(
+                (file_top, path.basename(file.path).split(".")[0]))
 
-        # Scores the similar words of each noun based on number of appearances and similarity to original noun
+        # Scores the similar words of each noun based on number if appearances and similarity to original noun
         scores = dict()
         for tops, name in top_nouns:
             i = 1

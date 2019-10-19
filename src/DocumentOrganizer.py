@@ -8,12 +8,14 @@ from src.File import File
 from src.Category import Category
 from shutil import move
 from os import path, mkdir
+from click import echo
 
 
 class DocumentOrganizer:
-    def __init__(self, base_dir: str, nlp):
+    def __init__(self, base_dir: str, nlp, logging=True):
         self.base_dir = base_dir
         self.nlp = nlp
+        self.logging = logging
         self.document_loader = DocumentLoader(base_dir)
         self.document_loader.load_files()
         self.document_sorter = DocumentSorter(
@@ -21,6 +23,8 @@ class DocumentOrganizer:
         self.categories = []
 
     def sort_file(self, file: File):
+        if self.logging:
+            echo("Sorting file: {}".format(path.basename(file.path)))
         if file.sorted:
             return
         # Check to see if a file can be sorted into a pre-existing category
@@ -58,6 +62,9 @@ class DocumentOrganizer:
     def category_names(self):
         for category in self.categories:
             self.document_sorter.category_name_for(category)
+            if self.logging:
+                echo("Category {}: {}".format(category.name,
+                                              ', '.join([path.basename(file.path) for file in category.files])))
 
     # Moves the sorted files into their proper place
     def move_files(self):
