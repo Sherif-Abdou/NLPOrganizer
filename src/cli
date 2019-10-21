@@ -8,10 +8,11 @@ environ["SPACY_WARNING_IGNORE"] = "W008"
 
 
 @click.command()
+@click.option("-v", "--verbose", is_flag=True, help="Turns on Verbose Output")
 @click.argument("directory")
-def run(directory):
+def run(verbose, directory):
     nlp = spacy.load("en_core_web_lg")
-    organizer = DocumentOrganizer(path.abspath(directory), nlp)
+    organizer = DocumentOrganizer(path.abspath(directory), nlp, verbose)
     for file in organizer.document_loader.files:
         organizer.sort_file(file)
     echo("Creating Category Names")
