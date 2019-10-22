@@ -2,11 +2,8 @@
 Sorts a set of Documents using Natural Language Processing
 """
 from collections import Counter
-from src.Category import Category
-from functools import lru_cache
 import json
 from os import path
-from os import mkdir
 
 
 class DocumentSorter:
