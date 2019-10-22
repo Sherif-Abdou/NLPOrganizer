@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-from click import echo
+from click import echo, secho
 import click
 import spacy
 from os import path, environ
 from src.DocumentOrganizer import DocumentOrganizer
+
 environ["SPACY_WARNING_IGNORE"] = "W008"
 
 
@@ -11,16 +12,20 @@ environ["SPACY_WARNING_IGNORE"] = "W008"
 @click.option("-v", "--verbose", is_flag=True, help="Turns on Verbose Output")
 @click.argument("directory")
 def run(verbose, directory):
-    nlp = spacy.load("en_core_web_lg")
-    organizer = DocumentOrganizer(path.abspath(directory), nlp, verbose)
-    for file in organizer.document_loader.files:
-        organizer.sort_file(file)
-    echo("Creating Category Names")
-    organizer.category_names()
-    echo("Moving Files")
-    organizer.move_files()
-    echo("Done")
+	if not path.exists(path.abspath(directory)):
+		secho("Invalid Path: {}".format(path.abspath(directory)), fg="red", err=True)
+		return
+	nlp = spacy.load("en_core_web_lg")
+	echo("Sorting into categories")
+	organizer = DocumentOrganizer(path.abspath(directory), nlp, verbose)
+	for file in organizer.document_loader.files:
+		organizer.sort_file(file)
+	echo("Creating Category Names")
+	organizer.category_names()
+	echo("Moving Files")
+	organizer.move_files()
+	echo("Done")
 
 
 if __name__ == "__main__":
-    run()
+	run()
