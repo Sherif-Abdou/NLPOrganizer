@@ -12,4 +12,4 @@ def generate_mock_folder():
         files = loads(json.read())
     for file in files:
         with open(path.join(path.dirname(__file__), "mock", file["name"]), "w") as stream:
-            stream.write(file["content"].encode(encoding="UTF-8", erros="ignore"))
+            stream.write(file["content"].encode(encoding="UTF-8", errors="ignore"))
