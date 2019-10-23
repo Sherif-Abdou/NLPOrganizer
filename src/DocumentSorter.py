@@ -80,6 +80,8 @@ class DocumentSorter:
         for tops, name in top_nouns:
             i = 1
             for top, _ in tops:
+                if self.nlp.vocab[top].vector_norm == 0:
+                    continue
                 for similar in self.most_similar(top, 50):
                     if similar == top:
                         continue
