@@ -29,7 +29,7 @@ class DocumentLoader:
 
     def add_text_file(self, file_path):
         try:
-            with open(file_path, "r") as file:
+            with open(file_path, "r", encoding="utf8") as file:
                 text_file = File(file_path, file.read())
                 self.files.append(text_file)
         except Exception as error:
