@@ -11,5 +11,6 @@ def generate_mock_folder():
     with open(path.join(path.dirname(__file__), "mock_files.json"), "r", encoding="utf8", errors="ignore") as json:
         files = loads(json.read())
     for file in files:
-        with open(path.join(path.dirname(__file__), "mock", file["name"]), "w") as stream:
-            stream.write(file["content"].encode(encoding="UTF-8", errors="ignore"))
+        with open(path.join(path.dirname(__file__), "mock", file["name"]), "w", encoding="utf8") as stream:
+            print(file["content"])
+            stream.write(file["content"])
