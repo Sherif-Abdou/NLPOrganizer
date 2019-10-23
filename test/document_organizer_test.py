@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
         organizer.category_names()
         for category in organizer.categories:
             print(category.name)
-            print([str(file) for file in category.files])
+            print([file for file in category.files])
 
     def test_move_files(self):
         npl = spacy.load("en_core_web_lg")
