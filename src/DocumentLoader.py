@@ -29,20 +29,21 @@ class DocumentLoader:
 
     def add_text_file(self, file_path):
         try:
-            with open(file_path, "r") as file:
+            with open(file_path, "r", encoding="utf8", errors="ignore") as file:
                 text_file = File(file_path, file.read())
                 self.files.append(text_file)
         except Exception as error:
             print("Couldn't Load {0}: {1}".format(file_path, error))
-            return
+        return
 
     def add_word_file(self, file_path):
         try:
             text = docx2txt.process(file_path)
             file = File(file_path, text)
             self.files.append(file)
-        except Exception:
-            return
+        except Exception as error:
+            print("Couldn't Load {0}: {1}".format(file_path, error))
+        return
 
     def add_pdf_file(self, file_path):
         try:
