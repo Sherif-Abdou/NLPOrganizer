@@ -5,14 +5,17 @@ Organizes all the files in a given directory based on DocumentSorter outputs
 from src.DocumentSorter import DocumentSorter
 from src.DocumentLoader import DocumentLoader
 from src.File import File
+from src.Category import Category
 from shutil import move
 from os import path, mkdir
+from click import echo
 
 
 class DocumentOrganizer:
-    def __init__(self, base_dir: str, nlp):
+    def __init__(self, base_dir: str, nlp, logging=True):
         self.base_dir = base_dir
         self.nlp = nlp
+        self.logging = logging
         self.document_loader = DocumentLoader(base_dir)
         self.document_loader.load_files()
         self.document_sorter = DocumentSorter(
@@ -20,6 +23,8 @@ class DocumentOrganizer:
         self.categories = []
 
     def sort_file(self, file: File):
+        if self.logging:
+            echo("Sorting file: {}".format(path.basename(file.path)))
         if file.sorted:
             return
         # Check to see if a file can be sorted into a pre-existing category
@@ -41,16 +46,25 @@ class DocumentOrganizer:
         # Checks to see if a file can be sorted into a new category with another file
         similar_files = self.document_sorter.check_for_similar(
             file.path, file.contents)
-        for other_file in similar_files:
-            if other_file.sorted is False:
-                category = self.document_sorter.category_name_for(
-                    file.contents, other_file.contents)
-                file.sorted = True
-                other_file.sorted = True
-                category.files.append(file)
-                category.files.append(other_file)
-                self.categories.append(category)
-                return
+        top_similar = (None, float("-inf"))
+        for other_file, similarity in similar_files:
+            if other_file.sorted is False and similarity >= top_similar[1]:
+                top_similar = (other_file, similarity)
+        if top_similar[0] is not None:
+            category = Category("untitled")
+            file.sorted = True
+            top_similar[0].sorted = True
+            category.files.append(file)
+            category.files.append(top_similar[0])
+            self.categories.append(category)
+            return
+
+    def category_names(self):
+        for category in self.categories:
+            self.document_sorter.category_name_for(category)
+            if self.logging:
+                echo("Category {}: {}".format(category.name,
+                                              ', '.join([path.basename(file.path) for file in category.files])))
 
     # Moves the sorted files into their proper place
     def move_files(self):

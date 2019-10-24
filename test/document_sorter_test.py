@@ -4,6 +4,7 @@ from os import path
 import os
 from test.MockFS import generate_mock_folder
 from src import DocumentSorter, DocumentLoader
+from src.Category import Category
 
 
 class document_sorter_test(unittest.TestCase):
@@ -26,8 +27,10 @@ class document_sorter_test(unittest.TestCase):
         loader = DocumentLoader(mock_dir)
         loader.load_files()
         sorter = DocumentSorter(loader.files, npl)
-        print(sorter.category_name_for(sorter.files[0].contents,
-                                       sorter.files[1].contents).name)
+        mock_category = Category("")
+        mock_category.files.append(sorter.files[0])
+        mock_category.files.append(sorter.files[1])
+        print(sorter.category_name_for(mock_category))
 
 
 if __name__ == '__main__':

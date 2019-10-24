@@ -11,7 +11,7 @@ class document_loader_test(unittest.TestCase):
         mock_dir = path.join(path.dirname(__file__), "mock")
         loader = DocumentLoader(mock_dir)
         loader.load_files()
-        print([str(file) for file in loader.files])
+        print([file for file in loader.files])
 
     def test_word_document(self):
         word_dir = path.join(path.dirname(__file__), "word")
