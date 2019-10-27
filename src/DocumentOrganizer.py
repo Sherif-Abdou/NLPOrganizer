@@ -22,11 +22,13 @@ class DocumentOrganizer:
             self.document_loader.files, self.nlp)
         self.categories = []
 
+    # Sorts a given file
     def sort_file(self, file: File):
         if self.logging:
             echo("Sorting file: {}".format(path.basename(file.path)))
         if file.sorted:
             return
+
         # Check to see if a file can be sorted into a pre-existing category
         for category in self.categories:
             similarity = 0
@@ -37,7 +39,9 @@ class DocumentOrganizer:
                 other_doc_no_stop = self.nlp(
                     ' '.join([str(t) for t in self.nlp(category_file.contents) if not t.is_stop]))
                 similarity += (file_doc_no_stop.similarity(other_doc_no_stop)
-                               )/len(category.files)
+                               ) / len(category.files)
+
+            # Similarity should be above the similarity threshold to be considered in the same category
             if similarity >= DocumentSorter.threshold:
                 category.files.append(file)
                 file.sorted = True
@@ -46,10 +50,14 @@ class DocumentOrganizer:
         # Checks to see if a file can be sorted into a new category with another file
         similar_files = self.document_sorter.check_for_similar(
             file.path, file.contents)
+
+        # Looks for the most similar file above the similarity threshold
         top_similar = (None, float("-inf"))
         for other_file, similarity in similar_files:
             if other_file.sorted is False and similarity >= top_similar[1]:
                 top_similar = (other_file, similarity)
+
+        # If there is such file create a category
         if top_similar[0] is not None:
             category = Category("untitled")
             file.sorted = True
@@ -59,6 +67,7 @@ class DocumentOrganizer:
             self.categories.append(category)
             return
 
+    # Creates category names for each of the created categories
     def category_names(self):
         for category in self.categories:
             self.document_sorter.category_name_for(category)
