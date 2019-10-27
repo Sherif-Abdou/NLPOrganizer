@@ -8,7 +8,7 @@ from src.File import File
 from src.Category import Category
 from shutil import move
 from os import path, mkdir
-from click import echo
+from click import echo, secho
 
 
 class DocumentOrganizer:
@@ -68,13 +68,26 @@ class DocumentOrganizer:
             return
 
     # Creates category names for each of the created categories
-    def category_names(self):
+    def category_names(self, manual=False):
+        if manual:
+            for category in self.categories:
+                name = self.__name(category)
+                category.name = name
+            return
         for category in self.categories:
             self.document_sorter.category_name_for(category)
             if self.logging:
                 echo("Category {}: {}".format(category.name,
                                               ', '.join([path.basename(file.path) for file in category.files])))
 
+    def __name(self, category):
+        secho(str(category), color="blue")
+        name = input("Category name: ")
+        if name is None or name == "":
+            secho("Invalid Name \n", err=True)
+            return self.__name(category)
+        else:
+            return name
     # Moves the sorted files into their proper place
     def move_files(self):
         for category in self.categories:
