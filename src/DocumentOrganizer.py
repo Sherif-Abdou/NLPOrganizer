@@ -88,6 +88,7 @@ class DocumentOrganizer:
             return self.__name(category)
         else:
             return name
+
     # Moves the sorted files into their proper place
     def move_files(self):
         for category in self.categories:
