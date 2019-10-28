@@ -10,4 +10,4 @@ class File:
         self.sorted = False
 
     def __str__(self):
-        return "{0}: {1}".format(self.path, self.contents)
+        return "Path: {0}| Content: {1}".format(self.path, self.contents)
