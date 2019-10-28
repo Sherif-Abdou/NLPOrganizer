@@ -3,14 +3,17 @@ from click import echo, secho
 import click
 import spacy
 from os import path
+from time import time
 from src.DocumentOrganizer import DocumentOrganizer
 
 
 @click.command()
 @click.option("-v", "--verbose", is_flag=True, help="Turns on Verbose Output")
 @click.option("-m", "--manual", is_flag=True, help="Asks the user to create category names")
+@click.option("-t", "--timed", is_flag=True, help="Times the time needed to sort")
 @click.argument("directory")
-def run(verbose, manual, directory):
+def run(verbose, manual, timed, directory):
+	start_time = time()
 	if not path.exists(path.abspath(directory)):
 		secho("Invalid Path, Doesn't exist: {}".format(path.abspath(directory)), fg="red", err=True)
 		return
@@ -26,7 +29,10 @@ def run(verbose, manual, directory):
 	organizer.category_names(manual)
 	echo("Moving Files")
 	organizer.move_files()
-	echo("Done")
+	if timed:
+		echo("Done sorting files, sorted in {} seconds".format(time() - start_time))
+	else:
+		echo("Done Sorting files")
 
 
 if __name__ == "__main__":
