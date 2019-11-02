@@ -11,29 +11,37 @@ from src.DocumentOrganizer import DocumentOrganizer
 @click.option("-v", "--verbose", is_flag=True, help="Turns on Verbose Output")
 @click.option("-m", "--manual", is_flag=True, help="Asks the user to create category names")
 @click.option("-t", "--timed", is_flag=True, help="Times the time needed to sort")
+@click.option("--gui", is_flag=True, help="Used for gui")
 @click.argument("directory")
-def run(verbose, manual, timed, directory):
-	start_time = time()
-	if not path.exists(path.abspath(directory)):
-		secho("Invalid Path, Doesn't exist: {}".format(path.abspath(directory)), fg="red", err=True)
-		return
-	if not path.isdir(path.abspath(directory)):
-		secho("Invalid Path, not a directory: {}".format(path.abspath(directory)), fg="red", err=True)
-		return
-	nlp = spacy.load("en_core_web_lg")
-	echo("Sorting into categories")
-	organizer = DocumentOrganizer(path.abspath(directory), nlp, verbose)
-	for file in organizer.document_loader.files:
-		organizer.sort_file(file)
-	echo("Creating Category Names")
-	organizer.category_names(manual)
-	echo("Moving Files")
-	organizer.move_files()
-	if timed:
-		echo("Done sorting files, sorted in {} seconds".format(time() - start_time))
-	else:
-		echo("Done Sorting files")
+def run(verbose, manual, timed, gui, directory):
+    start_time = time()
+    if not path.exists(path.abspath(directory)):
+        secho("Invalid Path, Doesn't exist: {}".format(
+            path.abspath(directory)), fg="red", err=True)
+        return
+    if not path.isdir(path.abspath(directory)):
+        secho("Invalid Path, not a directory: {}".format(
+            path.abspath(directory)), fg="red", err=True)
+        return
+    nlp = spacy.load("en_core_web_lg")
+    if not gui:
+        echo("Sorting into categories")
+    organizer = DocumentOrganizer(path.abspath(directory), nlp, verbose, gui)
+    for file in organizer.document_loader.files:
+        organizer.sort_file(file)
+    if not gui:
+        echo("Creating Category Names")
+    organizer.category_names(manual)
+    if not gui:
+        echo("Moving Files")
+    organizer.move_files()
+    if timed:
+        echo("Done sorting files, sorted in {} seconds".format(time() - start_time))
+    elif gui:
+        organizer.categories_to_json()
+    else:
+        echo("Done Sorting files")
 
 
 if __name__ == "__main__":
-	run()
+    run()

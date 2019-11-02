@@ -9,18 +9,21 @@ from src.Category import Category
 from shutil import move
 from os import path, mkdir
 from click import echo, secho
+from json import dumps
 
 
 class DocumentOrganizer:
-    def __init__(self, base_dir: str, nlp, logging=True):
+    def __init__(self, base_dir: str, nlp, logging=True, gui=False):
         self.base_dir = base_dir
         self.nlp = nlp
         self.logging = logging
+        self.gui = gui
         self.document_loader = DocumentLoader(base_dir)
         self.document_loader.load_files()
         self.document_sorter = DocumentSorter(
             self.document_loader.files, self.nlp)
         self.categories = []
+        self.outliers = []
 
     # Sorts a given file
     def sort_file(self, file: File):
@@ -66,6 +69,7 @@ class DocumentOrganizer:
             category.files.append(top_similar[0])
             self.categories.append(category)
             return
+        self.outliers.append(file)
 
     # Creates category names for each of the created categories
     def category_names(self, manual=False):
@@ -97,3 +101,18 @@ class DocumentOrganizer:
             for file in category.files:
                 move(file.path, path.join(self.base_dir,
                                           category.name, path.basename(file.path)))
+
+    def categories_to_json(self):
+        output = []
+        for category in self.categories:
+            dictionary = dict()
+            dictionary["name"] = category.name
+            dictionary["files"] = [path.join(self.base_dir,
+                                             category.name, path.basename(file.path)) for file in category.files]
+            output.append(dictionary)
+        outlier_dict = dict()
+        outlier_dict["name"] = ";"
+        outlier_dict["files"] = [file.path for file in self.outliers]
+        output.append(outlier_dict)
+        json = dumps(output)
+        echo(json)
