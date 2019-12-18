@@ -2,6 +2,9 @@
 Sorts a set of Documents using Natural Language Processing
 """
 from collections import Counter
+from typing import List
+from src.File import File
+from src.Category import Category
 import json
 from os import path
 
@@ -10,7 +13,7 @@ class DocumentSorter:
     # The threshold for when two files are considered similar
     threshold = 0.85
 
-    def __init__(self, files, nlp):
+    def __init__(self, files: List[File], nlp):
         self.files = files
         self.nlp = nlp
         self.cache_path = path.join(path.dirname(__file__), "cache")
@@ -21,9 +24,9 @@ class DocumentSorter:
         # Make sure the path exists, if not create it
         if not path.exists(self.cache_path):
             return
-        else:
-            with open(self.cache_path, "r") as file:
-                self.cache = json.load(file)
+
+        with open(self.cache_path, "r") as file:
+            self.cache = json.load(file)
 
     def savecache(self):
         with open(self.cache_path, "w") as file:
@@ -64,7 +67,7 @@ class DocumentSorter:
         return output
 
     # Determines a category name
-    def category_name_for(self, category):
+    def category_name_for(self, category: Category):
         # Finds the 5 most common nouns in each document
         top_nouns = []
         for file in category.files:
@@ -75,7 +78,26 @@ class DocumentSorter:
             top_nouns.append(
                 (file_top, path.basename(file.path).split(".")[0]))
 
-        # Scores the similar words of each noun based on number if appearances and similarity to original noun
+        scores = self._get_scores(top_nouns)
+
+        # Looks through the scores to find the highest scoring word
+        curr_word = self._highest_scoring_word(scores)
+        # Outputs the highest scoring word
+        category.name = curr_word
+        return
+
+    def _highest_scoring_word(self, scores):
+        curr_word = ""
+        curr_score = float("-inf")
+        for word, score in scores.items():
+            if score > curr_score:
+                curr_word = word
+                curr_score = score
+        self.savecache()
+        return curr_word
+
+    # Scores the similar words of each noun based on number if appearances and similarity to original noun
+    def _get_scores(self, top_nouns):
         scores = dict()
         for tops, name in top_nouns:
             i = 1
@@ -90,15 +112,4 @@ class DocumentSorter:
                     else:
                         scores[similar] = 1 / i
                 i += 0.1
-
-        # Looks through the scores to find the highest scoring word
-        curr_word = ""
-        curr_score = float("-inf")
-        for word, score in scores.items():
-            if score > curr_score:
-                curr_word = word
-                curr_score = score
-        self.savecache()
-        # Outputs the highest scoring word
-        category.name = curr_word
-        return
+        return scores
