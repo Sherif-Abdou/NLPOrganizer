@@ -8,7 +8,6 @@ from src.Category import Category
 import json
 from os import path
 
-
 class DocumentSorter:
     # The threshold for when two files are considered similar
     threshold = 0.85
@@ -18,9 +17,9 @@ class DocumentSorter:
         self.nlp = nlp
         self.cache_path = path.join(path.dirname(__file__), "cache")
         self.cache = dict()
-        self.loadcache()
+        self.__load_cache()
 
-    def loadcache(self):
+    def __load_cache(self):
         # Make sure the path exists, if not create it
         if not path.exists(self.cache_path):
             return
@@ -28,16 +27,16 @@ class DocumentSorter:
         with open(self.cache_path, "r") as file:
             self.cache = json.load(file)
 
-    def savecache(self):
+    def __save_cache(self):
         with open(self.cache_path, "w") as file:
             json.dump(self.cache, file)
 
     # Determines what files are similar to a given file
     def check_for_similar(self, path: str, file: str):
         similar = []
-        for other_rawfile in self.files:
-            other_path = other_rawfile.path
-            other_file = other_rawfile.contents
+        for other_raw_file in self.files:
+            other_path = other_raw_file.path
+            other_file = other_raw_file.contents
             if other_path != path:
                 # Loads each file into Spacy's Natural Language Processing
                 main_doc = self.nlp(file)
@@ -50,16 +49,21 @@ class DocumentSorter:
                 # Compares the two files' similarity
                 similarity = main_doc_no_stop.similarity(other_doc_no_stop)
                 if similarity >= DocumentSorter.threshold:
-                    similar.append((other_rawfile, similarity))
+                    similar.append((other_raw_file, similarity))
         return similar
 
     # Finds the i most similar words to a given word
     def most_similar(self, word, i):
+        # Don't recalculate word if already in cache
         if word in self.cache:
             return self.cache[word]
+
+        # Collect all word vectors in the nlp dictionary
         lexeme = self.nlp.vocab[word]
         queries = [w for w in lexeme.vocab if w.is_lower ==
                    lexeme.is_lower and w.prob >= -15 and w.has_vector and w.vector_norm]
+
+        # Sort the nlp dictionary by similarity to given word and collect the top i
         by_similarity = sorted(
             queries, key=lambda w: lexeme.similarity(w), reverse=True)
         output = [w.lower_ for w in by_similarity[:i]]
@@ -72,41 +76,51 @@ class DocumentSorter:
         top_nouns = []
         for file in category.files:
             file_nouns = [token.text for token in self.nlp(file.contents) if
-                          token.is_stop != True and token.is_punct != True and token.pos_ == "NOUN"]
+                          token.is_stop is not True and token.is_punct is not True and token.pos_ == "NOUN"]
             file_counter = Counter(file_nouns)
             file_top = file_counter.most_common(5)
             top_nouns.append(
                 (file_top, path.basename(file.path).split(".")[0]))
 
-        scores = self._get_scores(top_nouns)
+        scores = self.__get_scores(top_nouns)
 
-        # Looks through the scores to find the highest scoring word
-        curr_word = self._highest_scoring_word(scores)
+        curr_word = self.__highest_scoring_word(scores)
+
+        # Updates the internal cache
+        self.__save_cache()
         # Outputs the highest scoring word
         category.name = curr_word
         return
 
-    def _highest_scoring_word(self, scores):
+    # Looks through the scores to find the highest scoring word
+    @staticmethod
+    def __highest_scoring_word(scores):
         curr_word = ""
+        # Start at the lowest possible value
         curr_score = float("-inf")
+
+        # Looks through each for the highest value
         for word, score in scores.items():
             if score > curr_score:
                 curr_word = word
                 curr_score = score
-        self.savecache()
         return curr_word
 
     # Scores the similar words of each noun based on number if appearances and similarity to original noun
-    def _get_scores(self, top_nouns):
+    def __get_scores(self, top_nouns):
         scores = dict()
         for tops, name in top_nouns:
             i = 1
             for top, _ in tops:
+                # Ignore if there is not a vector
                 if self.nlp.vocab[top].vector_norm == 0:
                     continue
+
+                # Add scores for the top similar words
                 for similar in self.most_similar(top, 50):
                     if similar == top:
                         continue
+
                     if similar in scores:
                         scores[similar] += 1 / i
                     else:
