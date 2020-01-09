@@ -8,9 +8,11 @@ from src.Category import Category
 import json
 from os import path
 
+
 class DocumentSorter:
     # The threshold for when two files are considered similar
-    threshold = 0.85
+    threshold = 0.86
+    append_threshold = 0.88
 
     def __init__(self, files: List[File], nlp):
         self.files = files

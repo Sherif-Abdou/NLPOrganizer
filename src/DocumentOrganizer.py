@@ -42,7 +42,7 @@ class DocumentOrganizer:
                                ) / len(category.files)
 
             # Similarity should be above the similarity threshold to be considered in the same category
-            if similarity >= DocumentSorter.threshold:
+            if similarity >= DocumentSorter.append_threshold:
                 category.files.append(file)
                 file.sorted = True
                 return
