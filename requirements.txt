@@ -14,7 +14,7 @@ pep8==1.7.1
 plac==0.9.6
 preshed==3.0.2
 pycodestyle==2.5.0
-PyPDF2==1.26.0
+PyPDF2==1.27.5
 requests==2.22.0
 spacy==2.2.1
 srsly==0.1.0
